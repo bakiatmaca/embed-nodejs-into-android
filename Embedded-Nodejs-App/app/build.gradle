@@ -1,0 +1,80 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'external-nodejsapp-build-deploy'
+}
+
+android {
+    namespace 'com.bakiatmaca.poc.embedded.nodejs'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.bakiatmaca.poc.embedded.nodejs"
+        applicationId "com.bakiatmaca.poc.embedded.nodejs"
+
+        minSdk 24
+        targetSdk 34
+
+        versionCode 1
+        versionName "1.0"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86_64"
+
+        }
+    }
+
+    // build and deploy external Node.js application package
+    project.tasks.preBuild.dependsOn('ext-build-deploy')
+    project.tasks.clean.dependsOn('ext-delete-package-file')
+
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            //version "3.22.1"
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs 'src/main/jniLibs/'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
+    implementation 'androidx.activity:activity-compose:1.5.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+}
